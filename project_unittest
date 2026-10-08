@@ -1,0 +1,50 @@
+import unittest
+from Main_forecast import Validate_terrain, Validate_weather_data, Validate_activity, input_handler
+
+class TestWeatherValidation(unittest.TestCase):
+
+    def test_terrain_valid(self):
+        # Test with a valid terrain value
+        data = {"terrain_type": "mountain", "exposure": "high", "slope": "steep", "remoteness": "wilderness"}
+        self.assertEqual(Validate_terrain(data), data)
+
+    def test_terrain_invalid(self):
+        # Test with an invalid terrain value
+        data = {"terrain_type": "mountain", "exposure": "nah", "slope": "flat", "remoteness": "urban"}
+        self.assertFalse(Validate_terrain(data))
+
+    def test_weather_convertion(self):
+        #Test if strings representing numbers are converted (Normal/Boundary)
+        data = ["2026-03-02", 15.5, 20.0] 
+        self.assertTrue(Validate_weather_data(data))
+
+    def test_weather_invalid_string(self):
+        #Test with non-numeric strings (Erroneous)
+        data = ["2026-03-02", "fifteen", "twenty"]
+        self.assertFalse(Validate_weather_data(data))
+
+    def test_terrain_empty_string(self):
+        data = {"terrain_type": "", "exposure": "", "slope": "", "remoteness": ""}
+        # Validate_terrain should return False for an empty string
+        self.assertFalse(Validate_terrain(data))
+
+    def test_weather_empty_list(self):
+        data = []
+        #Test if .pop(0) causes a crash or is handled safely
+        result = Validate_weather_data(data)
+        self.assertFalse(result)
+
+    def test_input_handler_full_pass(self):
+        #Test with valid input data
+        data = ["2026-03-02", 10.0, 5.0]
+        terrain = {"terrain_type": "road", "exposure": "low", "slope": "flat", "remoteness": "urban"}
+        activity = "hiking"
+        val_weather, val_act, val_terr = input_handler(data, activity, terrain)
+        
+        # Assertions
+        self.assertTrue(val_weather)
+        self.assertNotEqual(val_act, False)
+        self.assertNotEqual(val_terr, False)
+
+if __name__ == '__main__':
+    unittest.main()
